@@ -50,7 +50,18 @@ class Power(db.Model, SerializerMixin):
             'hero_power': [hero_power.to_dict(max_depth=0) for hero_power in self.hero_power]
         }
 
-    # add validation
+    @validates('description')
+    def validate_description(self, key, description):
+        if len(description.strip()) < 20:
+            raise ValueError('Description must be at least 20 characters long')
+        return description
+
+    @validates('strength')
+    def validate_strength(self, key, strength):
+        allowed_strengths = ['Strong', 'Weak', 'Average']
+        if strength not in allowed_strengths:
+            raise ValueError(f"Strength must be one of the following values: {', '.join(allowed_strengths)}")
+        return strength
 
     def __repr__(self):
         return f'<Power {self.id}>'
